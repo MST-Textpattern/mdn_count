@@ -1,6 +1,6 @@
 {
     "name": "mdn_count",
-    "version": '2.1.1',
+    "version": "2.1.1",
     "description": "Provides a count of the number of articles by section or category, or both",
     "type": 0,
     "order": 5,
