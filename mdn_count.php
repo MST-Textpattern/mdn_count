@@ -5,7 +5,10 @@ function mdn_count($atts, $thing=NULL) {
 		'section' => '',
 		'category' => '',
 		'status' => '4',
-		'time' => 'now'
+		'time' => 'now',
+		'customfield' => '',
+		'customvalue' => '',
+		'debug' => false
 	), $atts));
 
 	$q[] = 'select count(*) count from '.safe_pfx('textpattern').' where 1 = 1';
@@ -63,6 +66,26 @@ function mdn_count($atts, $thing=NULL) {
 		$q[] = ')';
 	}
 
-	$r = getRows(join(' ', $q));
+    if (!empty($customfield)) {
+        $fields = array_map('trim', explode(',', $customfield));
+        $values = array_map('trim', explode(',', $customvalue));
+
+        foreach ($fields as $i => $field) {
+            $field_id = safe_field('replace(name, \'_set\', \'\')', 'txp_prefs', 'val = "'.$field.'" and name like "custom_%_set"');
+
+            if ($field_id) {
+                $q[] = 'and (' . $field_id . ' = \'' . (isset($values[$i]) ? $values[$i] : '') . '\')';
+            }
+        }
+    }
+
+    $query = join(' ', $q);
+
+    if ($debug) {
+        echo '<!--', $query, '-->';
+    }
+
+	$r = getRows($query);
+
 	return $r[0]['count'];
 }
